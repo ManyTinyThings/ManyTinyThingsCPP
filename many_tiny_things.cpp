@@ -2,16 +2,20 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#ifdef __EMSCRIPTEN__
-#include <emscripten.h>
-#else
-#include "GL/glew.h"
-#endif // __EMSCRIPTEN__
 
 
 #include "SDL2/SDL.h"
 #undef main
+
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#include "SDL2/SDL_opengles2.h"
+#else
+#include "GL/glew.h"
 #include "SDL2/SDL_opengl.h"
+#endif // __EMSCRIPTEN__
+
+
 
 
 #if DEBUG
@@ -104,11 +108,12 @@ initRenderer(Renderer* renderer)
     
     const char* fragmentShaderSource =
     multilineString(
-         varying vec4 Color;
-         
-         void main() {
-             gl_FragColor = Color;
-         }
+		precision mediump float;
+        varying vec4 Color;
+        
+        void main() {
+			gl_FragColor = Color;
+        }
     );
 
 
