@@ -184,7 +184,7 @@ void
 defaultParticles(Simulation* simulation)
 {
     
-    setParticleCount(simulation, hexagonNumber(15));
+    setParticleCount(simulation, hexagonNumber(13));
     
     //setParticleCount(simulation, 1000);
     for (int i = 0; i < simulation->particleCount; ++i) {
@@ -268,24 +268,23 @@ V2
 shortestVectorFromLine(V2 point, V2 lineStart, V2 lineEnd)
 {
     V2 lineVector = lineEnd - lineStart;
-	V2 particleFromWallStart = point - lineStart;
-	// part of wall
-    f32 t = inner(particleFromWallStart, lineVector) / square(lineVector);
+	V2 pointFromLineStart = point - lineStart;
+    f32 t = inner(pointFromLineStart, lineVector) / square(lineVector);
     
-	V2 particleFromWall;
+	V2 pointFromLine;
 	if (t <= 0)
     {
-        particleFromWall = particleFromWallStart;
+        pointFromLine = pointFromLineStart;
     }
     else if (t >= 1)
     {
-        particleFromWall = particleFromWallStart - lineVector;
+        pointFromLine = pointFromLineStart - lineVector;
     }
     else
     {
-        particleFromWall = particleFromWallStart - t * lineVector;
+        pointFromLine = pointFromLineStart - t * lineVector;
     }
-    return particleFromWall;
+    return pointFromLine;
 }
 
 bool
@@ -417,7 +416,7 @@ advanceSimulation(Simulation* simulation, f64 timeToSimulate)
         	// ! particle-particle interactions
         	
         	f64 range = simulation->cutoffFactor * simulation->separation;
-        	// TODO: optimize this to be a circle
+        	// TODO: maybe optimize this to be a circle? (probably not worth it)
         	int gridRadius = range / min(simulation->gridCellWidth, simulation->gridCellHeight);
 
         	for (int y = -gridRadius; y <= gridRadius; ++y)

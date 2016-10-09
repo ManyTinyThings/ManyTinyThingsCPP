@@ -201,7 +201,11 @@ loop(void* argument)
 
         initRenderer(renderer);
         initSimulation(simulation);
-        evaporationSetup(simulation);
+        defaultParticles(simulation);
+        defaultWalls(simulation);
+        simulation->temperature = 1;
+        simulation->viscosity = 0.05;
+        //evaporationSetup(simulation);
     }
 
     // ! Timekeeping
@@ -265,7 +269,7 @@ loop(void* argument)
             SDL_Scancode scancode = event.key.keysym.scancode;
 			if (scancode == SDL_SCANCODE_R)
 			{
-				initSimulation(simulation);
+                defaultParticles(simulation);
 			}
             else if (scancode == SDL_SCANCODE_C)
             {
@@ -406,6 +410,31 @@ loop(void* argument)
         glBufferData(GL_ARRAY_BUFFER, bufferByteCount, bufferData, GL_STATIC_DRAW);
         glDrawArrays(GL_LINES, 0, totalVertexCount);
 		free(bufferData);
+    }
+
+    if (simulation->isDragging)
+    {
+        // draw dragging line
+        int totalVertexCount = 2;
+        int bufferByteCount = totalVertexCount * sizeof(VertexColor);
+
+        Color4 black = c4(0, 0, 0, 1);
+
+        VertexColor bufferData[2];
+        VertexColor* bufferCursor = bufferData;
+
+        Particle* draggedParticle = simulation->particles + simulation->draggedParticleIndex;
+        bufferCursor->vertex = draggedParticle->position;
+        bufferCursor->color = black;
+        ++bufferCursor;
+
+        bufferCursor->vertex = simulation->mousePosition;
+        bufferCursor->color = black;
+        ++bufferCursor;
+
+        glLineWidth(2);
+        glBufferData(GL_ARRAY_BUFFER, bufferByteCount, bufferData, GL_STATIC_DRAW);
+        glDrawArrays(GL_LINES, 0, totalVertexCount);
     }
 }
 
